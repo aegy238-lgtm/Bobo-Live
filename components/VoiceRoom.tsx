@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { Room, User, ChatMessage, Gift, UserLevel, GameSettings, GlobalAnnouncement, LuckyMultiplier } from '../types';
-import { Mic, MicOff, Gift as GiftIcon, X, Send, LayoutGrid, Gamepad2, Settings, ChevronDown, Clover, Sparkles, RotateCcw, LogOut, ShieldCheck, Gem, Timer, Zap, Eraser, Users as UsersIcon, UserMinus, Menu, Plus } from 'lucide-react';
+import { Mic, MicOff, Gift as GiftIcon, X, Send, LayoutGrid, Gamepad2, Settings, ChevronDown, Clover, Sparkles, RotateCcw, LogOut, ShieldCheck, Gem, Timer, Zap, Eraser, Users as UsersIcon, UserMinus, Menu, Plus, Star, Crown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import UserProfileSheet from './UserProfileSheet';
 import Toast, { ToastMessage } from './Toast';
@@ -188,8 +188,21 @@ const VoiceRoom: React.FC<VoiceRoomProps> = ({
       type: 'gift', giftData: gift, isLuckyWin, winAmount: refundAmount
     };
     setMessages(prev => [...prev, giftMsg]);
-    if (totalCost >= 5000 || isLuckyWin) {
-      onAnnouncement({ id: Date.now().toString(), senderName: currentUser.name, recipientName, giftName: gift.name, giftIcon: gift.icon, roomTitle: room.title, roomId: room.id, type: isLuckyWin ? 'lucky_win' : 'gift', amount: isLuckyWin ? refundAmount : totalCost, timestamp: new Date() });
+
+    // الإعلان العالمي لجميع الرومات عند إرسال هدية ضخمة أو فوز كبير
+    if (totalCost >= 2000 || isLuckyWin) {
+      onAnnouncement({ 
+        id: Date.now().toString(), 
+        senderName: currentUser.name, 
+        recipientName, 
+        giftName: gift.name, 
+        giftIcon: gift.icon, 
+        roomTitle: room.title, 
+        roomId: room.id, 
+        type: isLuckyWin ? 'lucky_win' : 'gift', 
+        amount: isLuckyWin ? refundAmount : totalCost, 
+        timestamp: new Date() 
+      });
     }
   };
 
@@ -268,57 +281,68 @@ const VoiceRoom: React.FC<VoiceRoomProps> = ({
          </div>
       </div>
 
-      {/* Speakers Grid - الاحترافي الجديد مع إزالة الميوت وتنسيق معلومات السيرفر */}
-      <div className="flex-1 px-4 overflow-y-auto mt-6 scrollbar-hide">
-         <div className="grid grid-cols-4 gap-x-2 gap-y-24 pt-4">
+      {/* Speakers Grid - Professional Microphone Capsule Design */}
+      <div className="flex-1 px-4 overflow-y-auto mt-4 scrollbar-hide">
+         <div className="grid grid-cols-4 gap-x-3 gap-y-24 pt-6">
             {localSeats.map((speaker, index) => (
                <div key={index} className="flex flex-col items-center relative">
-                  <button onClick={() => handleSeatClick(index)} className="relative w-16 h-16 rounded-full flex items-center justify-center transition-transform active:scale-90 group">
+                  <button onClick={() => handleSeatClick(index)} className="relative w-full aspect-square flex flex-col items-center justify-center transition-all duration-300">
                      {speaker ? (
-                        <div className="relative w-full h-full flex flex-col items-center">
-                           {/* توهج احترافي عند التحدث فقط */}
+                        <div className="relative w-full flex flex-col items-center">
+                           {/* Sound Aura Wave when speaking */}
                            {!speaker.isMuted && (
-                              <>
-                                 <div className="absolute inset-0 bg-cyan-500/40 rounded-full animate-ping -z-10 blur-sm scale-110"></div>
-                                 <div className="absolute inset-0 bg-blue-500/20 rounded-full animate-pulse -z-10 blur-md scale-125"></div>
-                              </>
+                              <div className="absolute top-[30%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20">
+                                 <motion.div 
+                                    animate={{ scale: [1, 1.45, 1], opacity: [0.6, 0.2, 0.6] }} 
+                                    transition={{ repeat: Infinity, duration: 2 }}
+                                    className="absolute inset-0 rounded-full border-2 border-amber-400/40 shadow-[0_0_20px_rgba(251,191,36,0.5)]"
+                                 />
+                                 <motion.div 
+                                    animate={{ scale: [1, 1.7], opacity: [0.4, 0] }} 
+                                    transition={{ repeat: Infinity, duration: 1.5 }}
+                                    className="absolute inset-0 rounded-full border border-white/20"
+                                 />
+                              </div>
                            )}
                            
-                           <div className="relative w-full h-full flex items-center justify-center z-10">
-                              {/* صورة المستخدم بإطار نظيف */}
-                              <div className={`w-[88%] h-[88%] rounded-full overflow-hidden transition-all duration-500 ${!speaker.frame ? 'p-[3px] bg-gradient-to-tr from-slate-700 to-slate-800 shadow-2xl border border-white/5' : ''}`}>
-                                <img src={speaker.avatar} className="w-full h-full rounded-full object-cover shadow-inner" />
+                           {/* Avatar Capsule */}
+                           <div className="relative z-10 w-14 h-14">
+                              <div className={`w-full h-full rounded-full overflow-hidden p-0.5 bg-gradient-to-b from-slate-600 to-slate-900 border border-white/20 shadow-[0_8px_16px_rgba(0,0,0,0.6)] ${!speaker.isMuted ? 'ring-2 ring-amber-400 ring-offset-2 ring-offset-slate-900' : ''}`}>
+                                <img src={speaker.avatar} className="w-full h-full rounded-full object-cover" />
                               </div>
-                              
-                              {/* الإطار الملكي */}
-                              {speaker.frame && <img src={speaker.frame} className="absolute inset-0 w-full h-full object-contain z-20 scale-[1.32] drop-shadow-2xl pointer-events-none" />}
-                              
-                              {/* ملاحظة: تم إزالة أيقونة الميوت الحمراء تماماً كما طلبت */}
+                              {/* Exclusive Frame */}
+                              {speaker.frame && <img src={speaker.frame} className="absolute inset-0 w-full h-full object-contain z-20 scale-[1.4] pointer-events-none drop-shadow-2xl" />}
                            </div>
 
-                           {/* معلومات السيرفر تحت الصورة بشكل رأسي متناسق */}
-                           <div className="absolute -bottom-16 flex flex-col items-center gap-1.5 w-full">
-                              {/* اسم المستخدم - مربوط بألوان السيرفر VIP */}
-                              <div className="w-max max-w-[85px] text-center px-1">
-                                 <span className={`text-[10px] font-black truncate block drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] ${speaker.nameStyle || 'text-white'}`}>
+                           {/* Pro Mic Stem Decoration */}
+                           <div className="absolute top-[85%] w-1.5 h-7 bg-gradient-to-b from-slate-300 via-slate-500 to-slate-800 rounded-b-full shadow-lg z-0"></div>
+
+                           {/* User Identity Section */}
+                           <div className="absolute -bottom-16 flex flex-col items-center w-full">
+                              <div className="flex items-center justify-center w-full mb-1">
+                                 <span className={`text-[10px] font-black truncate max-w-[70px] drop-shadow-md ${speaker.nameStyle || 'text-white'}`}>
                                     {speaker.name}
                                  </span>
                               </div>
 
-                              {/* عداد الكاريزما - مربوط بسيرفر التصفير */}
-                              <div className="flex items-center gap-1.5 bg-black/50 backdrop-blur-2xl px-2.5 py-0.5 rounded-full border border-pink-500/20 shadow-2xl min-w-[48px] justify-center">
-                                 <Sparkles size={9} className="text-pink-400 animate-pulse" />
-                                 <span className="text-[10px] text-white font-black italic tracking-tighter leading-none">
+                              {/* Charm/Kudos counter - Elegant capsule */}
+                              <div className="flex items-center gap-1 bg-gradient-to-r from-pink-600/60 to-purple-600/60 backdrop-blur-md px-2 py-0.5 rounded-full border border-white/10 shadow-[0_2px_5px_rgba(0,0,0,0.3)]">
+                                 <Sparkles size={8} className="text-white animate-pulse" />
+                                 <span className="text-[9px] text-white font-black tracking-tighter">
                                     {(speaker.charm || 0).toLocaleString()}
                                  </span>
                               </div>
                            </div>
                         </div>
                      ) : (
-                        /* تصميم المقعد الفارغ الاحترافي الجديد */
-                        <div className="relative w-full h-full flex items-center justify-center rounded-full bg-slate-900/40 border-2 border-dashed border-white/5 group-hover:bg-white/5 group-hover:border-white/10 transition-all hover:scale-105 shadow-inner overflow-hidden">
-                           <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent opacity-20"></div>
-                           <div className="w-3 h-3 rounded-full bg-slate-800 shadow-lg border border-white/5"></div>
+                        /* Empty Seat Slot - Pro Look */
+                        <div className="group relative flex flex-col items-center">
+                           <div className="w-12 h-12 rounded-full bg-slate-900/60 border border-white/5 flex items-center justify-center shadow-[inset_0_2px_10px_rgba(0,0,0,0.5)] group-hover:bg-slate-800/80 transition-all">
+                              <div className="w-4 h-4 bg-slate-700/50 rounded-full flex items-center justify-center">
+                                <Plus size={10} className="text-slate-500 group-hover:text-amber-500 group-hover:scale-125 transition-all" />
+                              </div>
+                           </div>
+                           <div className="mt-1 w-4 h-1 bg-black/40 rounded-full"></div>
                         </div>
                      )}
                   </button>
@@ -328,7 +352,7 @@ const VoiceRoom: React.FC<VoiceRoomProps> = ({
       </div>
 
       {/* Chat & Interaction Bar */}
-      <div className="h-[40%] bg-gradient-to-t from-black via-black/90 to-transparent px-4 pb-4 pt-10 flex flex-col justify-end relative shrink-0">
+      <div className="h-[40%] bg-gradient-to-t from-black via-black/95 to-transparent px-4 pb-4 pt-10 flex flex-col justify-end relative shrink-0">
          <div className="overflow-y-auto mb-4 space-y-2.5 pr-1 scrollbar-hide flex-1">
             {messages.map((msg) => (
                <div key={msg.id} className="flex flex-col items-start">

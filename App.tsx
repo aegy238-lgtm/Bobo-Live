@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { Home, User as UserIcon, Plus, Bell, Crown, Gem, Settings, ChevronRight, Edit3, Share2, LogOut, Shield, Database, ShoppingBag, Camera, Trophy, Flame, Sparkles, UserX, Star, ShieldCheck, MapPin } from 'lucide-react';
+import { Home, User as UserIcon, Plus, Bell, Crown, Gem, Settings, ChevronRight, Edit3, Share2, LogOut, Shield, Database, ShoppingBag, Camera, Trophy, Flame, Sparkles, UserX, Star, ShieldCheck, MapPin, Wallet } from 'lucide-react';
 import RoomCard from './components/RoomCard';
 import VoiceRoom from './components/VoiceRoom';
 import AuthScreen from './components/AuthScreen';
@@ -12,6 +12,7 @@ import CreateRoomModal from './components/CreateRoomModal';
 import MiniPlayer from './components/MiniPlayer';
 import GlobalBanner from './components/GlobalBanner';
 import AdminPanel from './components/AdminPanel';
+import WalletModal from './components/WalletModal';
 import { DEFAULT_VIP_LEVELS, DEFAULT_GIFTS, DEFAULT_STORE_ITEMS } from './constants';
 import { Room, User, VIPPackage, UserLevel, Gift, StoreItem, GameSettings, GlobalAnnouncement } from './types';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -60,6 +61,7 @@ export default function App() {
   const [showBagModal, setShowBagModal] = useState(false);
   const [showCreateRoomModal, setShowCreateRoomModal] = useState(false);
   const [showAdminPanel, setShowAdminPanel] = useState(false);
+  const [showWalletModal, setShowWalletModal] = useState(false);
 
   // حساب كبار الداعمين من قاعدة البيانات مباشرة (المستخدمين الحقيقيين فقط)
   const topContributors = useMemo(() => {
@@ -356,6 +358,7 @@ export default function App() {
                        <div className="text-xs text-slate-400">رصيد العملات</div>
                        <div className="font-bold text-lg text-yellow-400">{(user.coins ?? 0).toLocaleString()} 🪙</div>
                     </div>
+                    <button onClick={() => setShowWalletModal(true)} className="px-4 py-2 bg-amber-500 text-black text-xs font-black rounded-xl active:scale-95 shadow-lg shadow-amber-900/20">شحن</button>
                  </div>
                  <div className="bg-slate-900 rounded-2xl border border-white/5 overflow-hidden">
                     {user.isAdmin && (
@@ -363,6 +366,10 @@ export default function App() {
                         <div className="flex items-center gap-3"><ShieldCheck size={18} className="text-red-500" /><span className="text-sm font-black text-red-500">لوحة الإدارة</span></div>
                       </div>
                     )}
+                    <div onClick={() => setShowWalletModal(true)} className="flex items-center justify-between p-4 border-b border-white/5 hover:bg-white/5 cursor-pointer">
+                      <div className="flex items-center gap-3"><Wallet size={18} className="text-indigo-500" /><span className="text-sm font-medium">المحفظة الإلكترونية</span></div>
+                      <div className="flex items-center gap-1.5"><span className="text-[10px] text-slate-500">أرصدتي</span><ChevronRight size={14} className="text-slate-700" /></div>
+                    </div>
                     <div onClick={() => setShowEditProfileModal(true)} className="flex items-center justify-between p-4 border-b border-white/5 hover:bg-white/5 cursor-pointer">
                       <div className="flex items-center gap-3"><Edit3 size={18} className="text-emerald-500" /><span className="text-sm font-medium">تعديل الحساب</span></div>
                     </div>
@@ -391,6 +398,9 @@ export default function App() {
       {showEditProfileModal && user && <EditProfileModal isOpen={showEditProfileModal} onClose={() => setShowEditProfileModal(false)} currentUser={user} onSave={handleUpdateUser} />}
       {showBagModal && user && <BagModal isOpen={showBagModal} onClose={() => setShowBagModal(false)} items={storeItems} user={user} onBuy={(item) => handleUpdateUser({ coins: user.coins - item.price, ownedItems: [...(user.ownedItems || []), item.id] })} onEquip={(item) => handleUpdateUser(item.type === 'frame' ? { frame: item.url } : { activeBubble: item.url })} />}
       {showCreateRoomModal && <CreateRoomModal isOpen={showCreateRoomModal} onClose={() => setShowCreateRoomModal(false)} onCreate={handleCreateRoom} />}
+      <AnimatePresence>
+        {showWalletModal && user && <WalletModal isOpen={showWalletModal} onClose={() => setShowWalletModal(false)} user={user} />}
+      </AnimatePresence>
 
       {currentRoom && (
         <div className={isRoomMinimized ? 'invisible absolute' : 'visible pointer-events-auto'}>

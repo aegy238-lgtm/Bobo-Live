@@ -28,6 +28,7 @@ export interface User {
   activeBubble?: string;
   cover?: string;
   coins: number;
+  diamonds: number; // Added diamonds for received support
   wealth: number;
   charm: number;
   isVip: boolean;
